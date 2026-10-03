@@ -113,8 +113,9 @@ this file's credits table. The short version:
 
 ## Credits and licences
 
-Every file here is somebody else's work. **Four licences are unresolved** and
-marked ⚠ below — do not redistribute this repo until they are settled.
+Every file here is somebody else's work. **One licence is unresolved** — the TOPIK
+grade column in `ko/presets_ko.db`, marked ⚠ below. Everything else has confirmed
+terms, several of which still require attribution or share-alike.
 
 ### Japanese
 
@@ -125,17 +126,17 @@ marked ⚠ below — do not redistribute this repo until they are settled.
 | `ja/anim_ja/` | [animCJK](https://github.com/parsimonhi/animCJK) | **Three:** Arphic Public License (character SVGs), LGPL-3.0-or-later (kana SVGs), Unihan (`dictionary*.txt`) |
 | `ja/grammar_ja/` | [hanabira.org-japanese-content](https://github.com/tristcoil/hanabira.org-japanese-content) | **CC BY 4.0 — attribution required** |
 | `ja/audio_ja/` | generated in-house with Google TTS (`gTTS`, MIT — a local build tool only) | **ours** — no third-party licence |
-| `ja/presets_ja.db` | [coto](https://github.com/coto-data/jlpt) JLPT data | ⚠ **no licence file found** |
+| `ja/presets_ja.db` | [OpenJLPT](https://github.com/evanclan/OpenJLPT) JLPT data + [kanjium](https://github.com/mutsuhiro/kanjium) radicals | **CC BY-SA 4.0** (share-alike) / **MIT** |
 
 ### Korean
 
 | What | Source | Licence |
 |---|---|---|
-| `ko/krdict.db` | [krdict-to-sqlite](https://github.com/ketzu/krdict-to-sqlite) (MIT), data from the National Institute of the Korean Language | ⚠ **NIKL/TOPIK redistribution terms unresolved** |
+| `ko/krdict.db` | [krdict-to-sqlite](https://github.com/ketzu/krdict-to-sqlite) (MIT), data from the National Institute of the Korean Language | **CC BY-SA 2.0 KR** (attribution + share-alike) |
 | `ko/anim_ko/` | [animCJK](https://github.com/parsimonhi/animCJK) | Arphic Public License |
 | `ko/grammar_ko/` | hanabira (as above) | **CC BY 4.0 — attribution required** |
 | `ko/audio_ko/` | generated in-house with Google TTS (`gTTS`, MIT — a local build tool only) | **ours** — no third-party licence |
-| `ko/presets_ko.db` | [combined_korean_vocabulary_list](https://github.com/julienshim/combined_korean_vocabulary_list) (MIT) + NIKL/TOPIK + hanabira | ⚠ **NIKL/TOPIK terms unresolved** |
+| `ko/presets_ko.db` | hanabira (grammar) + NIKL/TOPIK (vocab) | **CC BY 4.0** (grammar) / **CC BY-SA 2.0 KR** (NIKL) / ⚠ **TOPIK grade column unconfirmed** |
 
 ### Chinese
 
@@ -144,31 +145,41 @@ marked ⚠ below — do not redistribute this repo until they are settled.
 | `zh/cedict.txt` | [CC-CEDICT](https://www.mdbg.net/chinese/dictionary?page=cc-cedict) | **CC BY-SA 4.0 — share-alike** |
 | `zh/anim_zh/` | [animCJK](https://github.com/parsimonhi/animCJK) | Arphic Public License |
 | `zh/audio_zh/` | [mp3-chinese-pinyin-sound](https://github.com/davinfifield/mp3-chinese-pinyin-sound) | public domain |
-| `zh/presets_zh.db` | [HSK 3.0](https://github.com/krmanik/HSK-3.0) | ⚠ `License.md` links to a PRC ministry PDF, not a licence grant |
+| `zh/presets_zh.db` | [HSK 3.0](https://github.com/krmanik/HSK-3.0), built from CC-CEDICT + SUBTLEX-CH + Pleco | **CC BY-SA 4.0** (share-alike) |
 
-### The three unresolved items
+### The one unresolved item
 
-Three, not four. The 142 kana and hangul files are **resolved**: we generated
-them ourselves with gTTS (MIT-licensed, used only as a local build tool and not
-a dependency of the app), so they carry no third-party licence and there is
-nothing to attribute.
+Down from three. **The TOPIK grade column** is all that is left open.
 
-  1. **`ja/presets_ja.db`** — coto's JLPT data; no licence file found upstream.
-  2. **TOPIK terms only** — NIKL is settled: the institute distributes
-     한국어기초사전 under **CC BY-SA 2.0 KR** since 2019-03-11 (attribution +
-     share-alike), which is the same family as the CC BY-SA data already shipped.
-     What is *not* settled is the TOPIK half (`한국어능력시험`, a separate body),
-     which is mixed into the same `ko/presets_ko.db` vocab tables — 5,741 rows of
-     which 1,532 are TOPIK-only. `results.tsv` is a derived work of both, so
-     share-alike from NIKL reaches it.
-     Note NIKL's own caveat: example sentences pulled from published material are
-     fair-use only and are **not** open; media files are not redistributable. We
-     use neither.
-  2b. **`ko/krdict.db` (191 MB)** — now resolvable on the same CC BY-SA 2.0 KR
-     basis, *provided* it is built from 한국어기초사전 only, which is what
-     `krdict-to-sqlite` does.
-  3. **`zh/presets_zh.db`** — HSK 3.0's `License.md` is a link to a government
-     PDF, not a permission statement.
+NIKL is settled: the institute distributes 한국어기초사전 under **CC BY-SA 2.0 KR**
+since 2019-03-11 (attribution + share-alike), which covers `ko/krdict.db` and the
+NIKL half of the vocab tables. The Japanese decks moved to **OpenJLPT**
+(CC BY-SA 4.0) on 2026-10-03, replacing *coto jlpt*, which had no licence file
+anywhere upstream. The Chinese decks are **HSK 3.0** rebuilt from CC-CEDICT and
+SUBTLEX-CH (both CC BY-SA 4.0) plus Pleco (MIT); only the New HSK (2021) lists are
+used, because the BCT/YCT lists in that repo carry no licence statement.
+
+What is *not* settled is TOPIK (`한국어능력시험`), a separate body, whose level
+assignment is mixed into the same `ko/presets_ko.db` vocab tables. Measured
+against the shipped file:
+
+| | rows |
+|---|---|
+| vocab rows in total | 5,741 |
+| graded 초급/중급 by TOPIK | 5,741 (100%) |
+| graded A/B/C by NIKL | 4,275 |
+| **TOPIK-only** (no NIKL level) | **1,466** |
+| NIKL-only (no TOPIK level) | 0 |
+
+Every row carries a TOPIK grade, and NIKL's licence does not reach the 1,466 rows
+that appear in no NIKL list — so nothing in that file can be called clean until
+TOPIK's own terms turn up. `results.tsv` is a derived work of both, so NIKL's
+share-alike does reach it. Note NIKL's own caveat: example sentences pulled from
+published material are fair-use only and are **not** open; media files are not
+redistributable. We use neither.
+
+If you need to be strict, install everything except `presets_ko.db` — the Korean
+grammar decks are unaffected (CC BY 4.0, hanabira.org).
 
 Also note the app's own credits dialog lists these sources; if a licence is
 missing from this table, check `src/lib/data/credits.ts` in the code repo.
@@ -179,7 +190,7 @@ missing from this table, check `src/lib/data/credits.ts` in the code repo.
 
 The data itself is not ours to license — it carries the terms above, several of
 which require attribution or share-alike. Add a `LICENSE` file here once the
-four unresolved items are settled and a single answer exists for what the repo
-as a whole can be distributed under.
+TOPIK question is settled and a single answer exists for what the repo as a whole
+can be distributed under.
 
 The **app** (code repo) is MIT.
