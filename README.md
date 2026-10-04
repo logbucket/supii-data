@@ -118,9 +118,9 @@ ask for attribution, some for share-alike. **Nothing blocks publication.**
 | `ja/jmdict.sqlite` | [jmdict-sqlite](https://github.com/shirakaba/jmdict-sqlite), data from [jmdict-yomitan](https://github.com/yomidevs/jmdict-yomitan) | MIT (tool) / JMdict terms (data) |
 | `ja/sudachi/` | [Sudachi](https://github.com/WorksApplications/Sudachi) | Apache-2.0 |
 | `ja/anim_ja/` | [animCJK](https://github.com/parsimonhi/animCJK) | Arphic Public License (characters), LGPL-3.0-or-later (kana), Unihan (`dictionary*.txt`) |
-| `ja/grammar_ja/` | [hanabira.org-japanese-content](https://github.com/tristcoil/hanabira.org) | **CC BY 4.0 — attribution required** |
+| `ja/grammar_ja/` | [hanabira.org-japanese-content](https://github.com/tristcoil/hanabira.org-japanese-content) | **CC BY 4.0 — attribution required** |
 | `ja/audio_ja/` | generated in-house with Google TTS (`gTTS`) | **ours** — gTTS is MIT and was a local build tool only |
-| `ja/presets_ja.db` | [OpenJLPT](https://github.com/evanclan/OpenJLPT) + [kanjium](https://github.com/mutsuhiro/kanjium) | **CC BY-SA 4.0** / **MIT** |
+| `ja/presets_ja.db` | [OpenJLPT](https://github.com/evanclan/OpenJLPT) + [kanjium](https://github.com/mifunetoshiro/kanjium) | **CC BY-SA 4.0** / **MIT** |
 
 ### Korean
 
@@ -141,14 +141,12 @@ ask for attribution, some for share-alike. **Nothing blocks publication.**
 | `zh/audio_zh/` | [mp3-chinese-pinyin-sound](https://github.com/davinfifield/mp3-chinese-pinyin-sound) | public domain |
 | `zh/presets_zh.db` | [HSK 3.0](https://github.com/krmanik/HSK-3.0), built from CC-CEDICT + SUBTLEX-CH + Pleco | **CC BY-SA 4.0** |
 
-### The TOPIK question (resolved)
+### TOPIK — keep it out of the app
 
-The Korean decks used to carry a `topik_level` column. TOPIK's publisher, NIIED,
-allows free use only for *personal purposes*, so that column could never ship.
-**It was removed on 2026-10-03.** The decks now use NIKL's own `vocabulary_level`
-from krdict instead — 44,468 words across Beginner (2,332), Intermediate (8,428)
-and Advanced (33,708), all CC BY-SA 2.0 KR. Deck levels are NIKL's, not TOPIK's,
-and not the separate 학습용 어휘 목록 which is easy to mistake for it.
+Pitfall worth knowing: don't reuse TOPIK level labels in anything shipped. NIIED
+(the body behind TOPIK) allows free use for personal purposes only, so TOPIK
+levels are not redistributable — NIKL's `vocabulary_level` from krdict is the
+one licence-safe alternative, and it's what the current decks use.
 
 If a licence is missing from these tables, check `src/lib/data/credits.ts` in
 the code repo — the app's credits dialog lists the same sources.
