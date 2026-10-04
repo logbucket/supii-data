@@ -1,196 +1,161 @@
 # supii-data
 
-The data half of [supii](https://github.com/logbucket/supii) — every dictionary,
-analyzer model and media file the app reads, laid out per language.
+This is the data half of [supii](https://github.com/logbucket/supii) — every
+dictionary, analyzer model and media file the app reads, sorted by language.
 
-**This repo is not the app.** The app is a separate repository and reads from
-whatever directory this is cloned into. Nothing here is code that runs in the
-app; `scripts/` holds the build tools that produced these files.
+**It is not the app.** Nothing here runs inside the app; `scripts/` just holds
+the build tools that made these files. The app is a separate repo and reads
+whatever directory this one was cloned into.
 
 ---
 
 ## Where to clone it
 
-The app resolves one directory, and it must be this repo's root:
-
 | OS | Path |
 |---|---|
-| Linux | `~/.local/share/supii` (`$XDG_DATA_HOME/supii`) |
+| Linux | `~/.local/share/supii` |
 | macOS | `~/Library/Application Support/supii` |
 | Windows | `%LOCALAPPDATA%\supii` |
 
 ```bash
 git clone git@github.com:logbucket/supii-data.git \
-  ~/.local/share/supii          # Linux
+  ~/.local/share/supii        # Linux
 ```
 
-The folder name `supii` is part of the contract — it is not the repository
-name. The app appends it to the OS data dir rather than using Tauri's
-identifier-based directory, which would be `com.gray.supii`.
+The folder has to be called `supii` — the app looks for that exact name. The
+repo itself is named `supii-data`.
 
-**700 MB.** Cloning with `--depth 1` is much faster if you do not need history.
+About **700 MB**. Use `git clone --depth 1` if you don't need history.
 
 ---
 
-## Layout
+## What's in it
 
 ```
 supii/
-├── user.db                 ← YOUR data. Never overwritten, never in git.
-├── assets/                 ← YOUR images (custom loading animation). Never in git.
+├── user.db                 ← YOUR cards, ratings, progress. Never in git.
+├── assets/                 ← YOUR images. Never in git.
 │
 ├── ja/                     ← Japanese
-│   ├── jmdict.sqlite        96 MB   lookup dictionary (words, kanji, glosses)
-│   ├── sudachi/            208 MB   analyzer: system.dic + sudachi.json
-│   ├── anim_ja/             54 MB   stroke-order SVGs + licences
-│   ├── grammar_ja/         6.4 MB   hanabira grammar notes (807 files)
-│   ├── audio_ja/           1.0 MB   102 kana recordings
-│   └── presets_ja.db       704 KB   JLPT N5–N1 decks + radicals
+│   ├── jmdict.sqlite       96 MB  word dictionary
+│   ├── sudachi/            208 MB analyzer
+│   ├── anim_ja/            54 MB  stroke-order SVGs
+│   ├── grammar_ja/         6.4 MB grammar notes
+│   ├── audio_ja/           1.0 MB kana audio
+│   └── presets_ja.db       704 KB JLPT decks + radicals
 │
 ├── ko/                     ← Korean
-│   ├── krdict.db           201 MB   lookup dictionary
-│   ├── anim_ko/            3.6 MB   hangul stroke SVGs + licences
-│   ├── grammar_ko/         5.5 MB   hanabira grammar notes (700 files)
-│   ├── audio_ko/           320 KB   40 jamo recordings
-│   └── presets_ko.db       1.6 MB   TOPIK 1–2 vocab + grammar
+│   ├── krdict.db           201 MB word dictionary
+│   ├── anim_ko/            3.6 MB stroke SVGs
+│   ├── grammar_ko/         5.5 MB grammar notes
+│   ├── audio_ko/           320 KB jamo audio
+│   └── presets_ko.db       1.6 MB NIKL-level vocab + grammar
 │
 ├── zh/                     ← Chinese
-│   ├── cedict.txt          9.4 MB   lookup dictionary
-│   ├── anim_zh/             65 MB   simplified + traditional stroke SVGs
-│   ├── audio_zh/             34 MB   1,632 pinyin recordings
-│   └── presets_zh.db       808 KB   HSK 1–6 chars, vocab, grammar
+│   ├── cedict.txt          9.4 MB word dictionary
+│   ├── anim_zh/            65 MB stroke SVGs
+│   ├── audio_zh/           34 MB pinyin audio
+│   └── presets_zh.db       808 KB HSK decks
 │
-└── scripts/                ← build tools for the above. See its README.
+└── scripts/                ← build tools, with its own README
 ```
 
-Each language folder owns **all** of its content. A Japanese-only install
-carries nothing for Korean or Chinese, and the app never looks outside the
-folder for the language it is showing.
+Each language folder owns all of its content. A Japanese-only install carries
+nothing for Korean or Chinese, and the app never reaches outside the folder for
+the language currently shown.
 
-### Why two dictionaries per language
+### Two dictionaries per language
 
-The analyzer and the lookup dictionary are different jobs, and neither one does
-both:
+Tokenizing and looking up glosses are different jobs:
 
-| | Tokenizes | Looks up glosses |
+| | Tokenizes | Has English glosses |
 |---|---|---|
-| `system.dic` (Sudachi) | yes | **no** — no English glosses in any variant |
+| `system.dic` (Sudachi) | yes | **no** |
 | `jmdict.sqlite` | no | yes |
 
-Korean and Chinese work the same way: `garu-core` and `jieba-rs` segment, and
-`krdict.db` / `cedict.txt` answer lookups. So both files are always needed.
+Korean and Chinese are the same shape: `garu-core` / `jieba-rs` split the text,
+`krdict.db` / `cedict.txt` answer the lookups. So both files are always needed.
 
 ---
 
-## What is *not* here
+## What's *not* here
 
-**Your own data stays in the same folder but is never committed.** `user.db`
-holds your cards, collections, ratings, grammar progress and SRS state;
-`assets/` holds images you added. Both are in `.gitignore`. If you pull and the
-app suddenly has no cards, you overwrote `user.db` — restore it from a backup.
+**Your data stays in the same folder but never commits.** `user.db` (cards,
+collections, ratings, grammar progress, SRS state) and `assets/` are in
+`.gitignore`. If you `git pull` and your cards vanish, you overwrote `user.db` —
+restore it from backup.
 
 **Plugin binaries are not here.** `plugins/*.so` are build output of the code
-repo, not data.
+repo.
 
 ---
 
 ## Rebuilding a file
 
-`scripts/` has one folder per tool, each with its own README and a link back to
-this file's credits table. The short version:
+One folder per tool in `scripts/`, each with its own README:
 
 | Rebuild | Tool |
 |---|---|
-| `ja/jmdict.sqlite` | `jmdict-kanjidict/` — run upstream's converter |
-| `ko/krdict.db` | `krdict-to-sqlite/` — **our edited copy, not a fresh clone** |
-| `zh/cedict.txt` | plain download, no build |
-| `*/anim_*/` | `animcjk` upstream, five directories only |
+| `ja/jmdict.sqlite` | `jmdict-kanjidict/` — upstream converter |
+| `ko/krdict.db` | `krdict-to-sqlite/` — **our edited fork** |
+| `zh/cedict.txt` | plain download |
+| `*/anim_*/` | `animcjk` upstream, five folders only |
 | `ja/sudachi/` | Sudachi source build |
-| `*/presets_*.db` | `scripts/` in the code repo |
-| `*/audio_*/` | see the audio notes in the scripts README |
+| `*/presets_*.db` | scripts in the code repo |
+| `*/audio_*/` | see the scripts README |
 
 ---
 
 ## Credits and licences
 
-Every file here is somebody else's work. **One licence is unresolved** — the TOPIK
-grade column in `ko/presets_ko.db`, marked ⚠ below. Everything else has confirmed
-terms, several of which still require attribution or share-alike.
+Every file here is someone else's work. Everything has confirmed terms — some
+ask for attribution, some for share-alike. **Nothing blocks publication.**
 
 ### Japanese
 
 | What | Source | Licence |
 |---|---|---|
-| `ja/jmdict.sqlite` | [jmdict-sqlite](https://github.com/shirakaba/jmdict-sqlite) (Jamie Birch), data from [jmdict-yomitan](https://github.com/yomidevs/jmdict-yomitan) | MIT (tool) / JMdict terms (data) |
+| `ja/jmdict.sqlite` | [jmdict-sqlite](https://github.com/shirakaba/jmdict-sqlite), data from [jmdict-yomitan](https://github.com/yomidevs/jmdict-yomitan) | MIT (tool) / JMdict terms (data) |
 | `ja/sudachi/` | [Sudachi](https://github.com/WorksApplications/Sudachi) | Apache-2.0 |
-| `ja/anim_ja/` | [animCJK](https://github.com/parsimonhi/animCJK) | **Three:** Arphic Public License (character SVGs), LGPL-3.0-or-later (kana SVGs), Unihan (`dictionary*.txt`) |
-| `ja/grammar_ja/` | [hanabira.org-japanese-content](https://github.com/tristcoil/hanabira.org-japanese-content) | **CC BY 4.0 — attribution required** |
-| `ja/audio_ja/` | generated in-house with Google TTS (`gTTS`, MIT — a local build tool only) | **ours** — no third-party licence |
-| `ja/presets_ja.db` | [OpenJLPT](https://github.com/evanclan/OpenJLPT) JLPT data + [kanjium](https://github.com/mutsuhiro/kanjium) radicals | **CC BY-SA 4.0** (share-alike) / **MIT** |
+| `ja/anim_ja/` | [animCJK](https://github.com/parsimonhi/animCJK) | Arphic Public License (characters), LGPL-3.0-or-later (kana), Unihan (`dictionary*.txt`) |
+| `ja/grammar_ja/` | [hanabira.org-japanese-content](https://github.com/tristcoil/hanabira.org) | **CC BY 4.0 — attribution required** |
+| `ja/audio_ja/` | generated in-house with Google TTS (`gTTS`) | **ours** — gTTS is MIT and was a local build tool only |
+| `ja/presets_ja.db` | [OpenJLPT](https://github.com/evanclan/OpenJLPT) + [kanjium](https://github.com/mutsuhiro/kanjium) | **CC BY-SA 4.0** / **MIT** |
 
 ### Korean
 
 | What | Source | Licence |
 |---|---|---|
-| `ko/krdict.db` | [krdict-to-sqlite](https://github.com/ketzu/krdict-to-sqlite) (MIT), data from the National Institute of the Korean Language | **CC BY-SA 2.0 KR** (attribution + share-alike) |
+| `ko/krdict.db` | [krdict-to-sqlite](https://github.com/ketzu/krdict-to-sqlite), data from the National Institute of the Korean Language | **CC BY-SA 2.0 KR** |
 | `ko/anim_ko/` | [animCJK](https://github.com/parsimonhi/animCJK) | Arphic Public License |
-| `ko/grammar_ko/` | hanabira (as above) | **CC BY 4.0 — attribution required** |
-| `ko/audio_ko/` | generated in-house with Google TTS (`gTTS`, MIT — a local build tool only) | **ours** — no third-party licence |
-| `ko/presets_ko.db` | hanabira (grammar) + NIKL/TOPIK (vocab) | **CC BY 4.0** (grammar) / **CC BY-SA 2.0 KR** (NIKL) / ⚠ **TOPIK grade column unconfirmed** |
+| `ko/grammar_ko/` | hanabira (as above) | **CC BY 4.0** |
+| `ko/audio_ko/` | generated in-house with `gTTS` | **ours** — same as above |
+| `ko/presets_ko.db` | hanabira grammar + NIKL vocab | **CC BY 4.0** / **CC BY-SA 2.0 KR** |
 
 ### Chinese
 
 | What | Source | Licence |
 |---|---|---|
-| `zh/cedict.txt` | [CC-CEDICT](https://www.mdbg.net/chinese/dictionary?page=cc-cedict) | **CC BY-SA 4.0 — share-alike** |
+| `zh/cedict.txt` | [CC-CEDICT](https://www.mdbg.net/chinese/dictionary?page=cc-cedict) | **CC BY-SA 4.0** |
 | `zh/anim_zh/` | [animCJK](https://github.com/parsimonhi/animCJK) | Arphic Public License |
 | `zh/audio_zh/` | [mp3-chinese-pinyin-sound](https://github.com/davinfifield/mp3-chinese-pinyin-sound) | public domain |
-| `zh/presets_zh.db` | [HSK 3.0](https://github.com/krmanik/HSK-3.0), built from CC-CEDICT + SUBTLEX-CH + Pleco | **CC BY-SA 4.0** (share-alike) |
+| `zh/presets_zh.db` | [HSK 3.0](https://github.com/krmanik/HSK-3.0), built from CC-CEDICT + SUBTLEX-CH + Pleco | **CC BY-SA 4.0** |
 
-### The one unresolved item
+### The TOPIK question (resolved)
 
-Down from three. **The TOPIK grade column** is all that is left open.
+The Korean decks used to carry a `topik_level` column. TOPIK's publisher, NIIED,
+allows free use only for *personal purposes*, so that column could never ship.
+**It was removed on 2026-10-03.** The decks now use NIKL's own `vocabulary_level`
+from krdict instead — 44,468 words across Beginner (2,332), Intermediate (8,428)
+and Advanced (33,708), all CC BY-SA 2.0 KR. Deck levels are NIKL's, not TOPIK's,
+and not the separate 학습용 어휘 목록 which is easy to mistake for it.
 
-NIKL is settled: the institute distributes 한국어기초사전 under **CC BY-SA 2.0 KR**
-since 2019-03-11 (attribution + share-alike), which covers `ko/krdict.db` and the
-NIKL half of the vocab tables. The Japanese decks moved to **OpenJLPT**
-(CC BY-SA 4.0) on 2026-10-03, replacing *coto jlpt*, which had no licence file
-anywhere upstream. The Chinese decks are **HSK 3.0** rebuilt from CC-CEDICT and
-SUBTLEX-CH (both CC BY-SA 4.0) plus Pleco (MIT); only the New HSK (2021) lists are
-used, because the BCT/YCT lists in that repo carry no licence statement.
-
-What is *not* settled is TOPIK (`한국어능력시험`), a separate body, whose level
-assignment is mixed into the same `ko/presets_ko.db` vocab tables. Measured
-against the shipped file:
-
-| | rows |
-|---|---|
-| vocab rows in total | 5,741 |
-| graded 초급/중급 by TOPIK | 5,741 (100%) |
-| graded A/B/C by NIKL | 4,275 |
-| **TOPIK-only** (no NIKL level) | **1,466** |
-| NIKL-only (no TOPIK level) | 0 |
-
-Every row carries a TOPIK grade, and NIKL's licence does not reach the 1,466 rows
-that appear in no NIKL list — so nothing in that file can be called clean until
-TOPIK's own terms turn up. `results.tsv` is a derived work of both, so NIKL's
-share-alike does reach it. Note NIKL's own caveat: example sentences pulled from
-published material are fair-use only and are **not** open; media files are not
-redistributable. We use neither.
-
-If you need to be strict, install everything except `presets_ko.db` — the Korean
-grammar decks are unaffected (CC BY 4.0, hanabira.org).
-
-Also note the app's own credits dialog lists these sources; if a licence is
-missing from this table, check `src/lib/data/credits.ts` in the code repo.
+If a licence is missing from these tables, check `src/lib/data/credits.ts` in
+the code repo — the app's credits dialog lists the same sources.
 
 ---
 
 ## Licence of this repository
 
-The data itself is not ours to license — it carries the terms above, several of
-which require attribution or share-alike. Add a `LICENSE` file here once the
-TOPIK question is settled and a single answer exists for what the repo as a whole
-can be distributed under.
-
-The **app** (code repo) is MIT.
+The data is not ours to license — it keeps whatever terms are listed above.
+The app (code repo) is MIT.
